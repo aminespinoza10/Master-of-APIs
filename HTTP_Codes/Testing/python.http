@@ -1,0 +1,28 @@
+@pythonAPI = http://localhost:8000
+
+GET {{pythonAPI}}/okCode
+Accept: application/json
+
+###
+GET {{pythonAPI}}/continueCode
+Accept: application/json
+
+###
+GET {{pythonAPI}}/movedPermanently
+Accept: application/json
+
+###
+GET {{pythonAPI}}/badRequest
+Accept: application/json
+
+###
+GET {{pythonAPI}}/forbidden
+Accept: application/json
+
+###
+GET {{pythonAPI}}/notFound
+Accept: application/json
+
+###
+GET {{pythonAPI}}/proxyRequired
+Accept: application/json

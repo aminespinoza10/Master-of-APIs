@@ -1,0 +1,28 @@
+@goAPI = http://localhost:8080
+
+GET {{goAPI}}/okCode
+Accept: application/json
+
+###
+GET {{goAPI}}/continueCode
+Accept: application/json
+
+###
+GET {{goAPI}}/movedPermanently
+Accept: application/json
+
+###
+GET {{goAPI}}/badRequest
+Accept: application/json
+
+###
+GET {{goAPI}}/forbidden
+Accept: application/json
+
+###
+GET {{goAPI}}/notFound
+Accept: application/json
+
+###
+GET {{goAPI}}/proxyRequired
+Accept: application/json

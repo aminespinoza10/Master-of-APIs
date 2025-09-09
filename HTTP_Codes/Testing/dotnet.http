@@ -1,0 +1,28 @@
+@dotnetAPI = http://localhost:5187
+
+GET {{dotnetAPI}}/okCode/
+Accept: application/json
+
+###
+GET {{dotnetAPI}}/continueCode/
+Accept: application/json
+
+###
+GET {{dotnetAPI}}/movedPermanently/
+Accept: application/json
+
+###
+GET {{dotnetAPI}}/badRequest/
+Accept: application/json
+
+###
+GET {{dotnetAPI}}/forbidden/
+Accept: application/json
+
+###
+GET {{dotnetAPI}}/notFound/
+Accept: application/json
+
+###
+GET {{dotnetAPI}}/proxyRequired/
+Accept: application/json

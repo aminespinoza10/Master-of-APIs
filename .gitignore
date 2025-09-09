@@ -35,3 +35,10 @@ Migrations/
 # Solucion files
 *.sln
 
+# Python virtual environment
+.venv/
+
+# Python cache files
+__pycache__/
+*.pyc
+

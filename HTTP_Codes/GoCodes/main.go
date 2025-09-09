@@ -25,12 +25,30 @@ func badRequestHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Bad request. Please check your input.")
 }
 
+func forbiddenHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusForbidden)
+	fmt.Fprintln(w, "Access forbidden. You don't have permission to access this resource.")
+}
+
+func notFoundHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotFound)
+	fmt.Fprintln(w, "Resource not found.")
+}
+
+func proxyRequiredHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusProxyAuthRequired)
+	fmt.Fprintln(w, "Proxy authentication required.")
+}
+
 func main() {
 
 	http.HandleFunc("/okCode", okCodeHandler)
 	http.HandleFunc("/continueCode", continueCodeHandler)
 	http.HandleFunc("/movedPermanently", movedPemanentlyHandler)
 	http.HandleFunc("/badRequest", badRequestHandler)
+	http.HandleFunc("/forbidden", forbiddenHandler)
+	http.HandleFunc("/notFound", notFoundHandler)
+	http.HandleFunc("/proxyRequired", proxyRequiredHandler)
 
 	fmt.Println("Starting server at :8080...")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
