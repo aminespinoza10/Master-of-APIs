@@ -1,10 +1,18 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.responses import PlainTextResponse
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 app = FastAPI()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+@app.post("/token")
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    if form_data.username == "aminespinoza@mail.com" and form_data.password == "polliTeAmo123":
+        return {"access_token": "yourtoken", "token_type": "bearer"}
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
 @app.get("/okCode", response_class=PlainTextResponse, name="getOkCode")
-async def get_ok_code():
+async def get_ok_code(token: str = Depends(oauth2_scheme)):
     return PlainTextResponse("Everything is awesome!", status_code=200)
 
 @app.get("/continueCode", response_class=PlainTextResponse, name="getContinueCode")
