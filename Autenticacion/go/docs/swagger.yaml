@@ -1,0 +1,82 @@
+info:
+  contact: {}
+paths:
+  /badRequest:
+    get:
+      description: Responds with HTTP 400 and a message
+      responses:
+        "400":
+          description: Bad request. Please check your input.
+          schema:
+            type: string
+      summary: Returns Bad Request status
+      tags:
+      - codes
+  /continueCode:
+    get:
+      description: Responds with HTTP 100 and a message
+      responses:
+        "100":
+          description: Continue processing...
+          schema:
+            type: string
+      summary: Returns Continue status
+      tags:
+      - codes
+  /forbidden:
+    get:
+      description: Responds with HTTP 403 and a message
+      responses:
+        "403":
+          description: Access forbidden. You don't have permission to access this
+            resource.
+          schema:
+            type: string
+      summary: Returns Forbidden status
+      tags:
+      - codes
+  /movedPermanently:
+    get:
+      description: Responds with HTTP 301 and a message
+      responses:
+        "301":
+          description: This resource has been moved permanently.
+          schema:
+            type: string
+      summary: Returns Moved Permanently status
+      tags:
+      - codes
+  /notFound:
+    get:
+      description: Responds with HTTP 404 and a message
+      responses:
+        "404":
+          description: Resource not found.
+          schema:
+            type: string
+      summary: Returns Not Found status
+      tags:
+      - codes
+  /okCode:
+    get:
+      description: Responds with HTTP 200 and a message
+      responses:
+        "200":
+          description: Everything is awesome!
+          schema:
+            type: string
+      summary: Returns OK status
+      tags:
+      - codes
+  /proxyRequired:
+    get:
+      description: Responds with HTTP 407 and a message
+      responses:
+        "407":
+          description: Proxy authentication required.
+          schema:
+            type: string
+      summary: Returns Proxy Authentication Required status
+      tags:
+      - codes
+swagger: "2.0"

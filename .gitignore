@@ -2,6 +2,9 @@
 bin/
 obj/
 
+# Configuration files
+appsettings.json
+
 # User-specific files
 *.user
 *.suo
@@ -38,8 +41,12 @@ Migrations/
 # Python virtual environment
 .venv/
 /venv
+venv/
 
 # Python cache files
 __pycache__/
 *.pyc
+
+# Environment variables file
+.env
 

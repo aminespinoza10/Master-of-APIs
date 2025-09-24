@@ -29,5 +29,6 @@ dotnet new webapi -o DotnetCodes
 # go run main.go
 
 # Python (in the PythonCodes directory)
+# python3 -m venv venv && source venv/bin/activate
 # /Master-of-APIs/.venv/bin/python -m uvicorn app:app --reload
 # python -m uvicorn app:app --reload
