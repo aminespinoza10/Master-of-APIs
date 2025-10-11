@@ -1,0 +1,42 @@
+@dotnetAPI = http://localhost:5167
+
+GET {{dotnetAPI}}/okCode/
+Headers:
+X-API-Key: "tu llave API aquí"
+Accept: application/json
+
+###
+GET {{dotnetAPI}}/continueCode/
+Headers:
+X-API-Key: "tu llave API aquí"
+Accept: application/json
+
+###
+GET {{dotnetAPI}}/movedPermanently/
+Headers:
+X-API-Key: "tu llave API aquí"
+Accept: application/json
+
+###
+GET {{dotnetAPI}}/badRequest/
+Headers:
+X-API-Key: "tu llave API aquí"
+Accept: application/json
+
+###
+GET {{dotnetAPI}}/forbidden/
+Headers:
+X-API-Key: "tu llave API aquí"
+Accept: application/json
+
+###
+GET {{dotnetAPI}}/notFound/
+Headers:
+X-API-Key: "tu llave API aquí"
+Accept: application/json
+
+###
+GET {{dotnetAPI}}/proxyRequired/
+Headers:
+X-API-Key: "tu llave API aquí"
+Accept: application/json

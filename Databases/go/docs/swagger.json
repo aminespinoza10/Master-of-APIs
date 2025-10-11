@@ -1,0 +1,127 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/badRequest": {
+            "get": {
+                "description": "Responds with HTTP 400 and a message",
+                "tags": [
+                    "codes"
+                ],
+                "summary": "Returns Bad Request status",
+                "responses": {
+                    "400": {
+                        "description": "Bad request. Please check your input.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/continueCode": {
+            "get": {
+                "description": "Responds with HTTP 100 and a message",
+                "tags": [
+                    "codes"
+                ],
+                "summary": "Returns Continue status",
+                "responses": {
+                    "100": {
+                        "description": "Continue processing...",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/forbidden": {
+            "get": {
+                "description": "Responds with HTTP 403 and a message",
+                "tags": [
+                    "codes"
+                ],
+                "summary": "Returns Forbidden status",
+                "responses": {
+                    "403": {
+                        "description": "Access forbidden. You don't have permission to access this resource.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/movedPermanently": {
+            "get": {
+                "description": "Responds with HTTP 301 and a message",
+                "tags": [
+                    "codes"
+                ],
+                "summary": "Returns Moved Permanently status",
+                "responses": {
+                    "301": {
+                        "description": "This resource has been moved permanently.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/notFound": {
+            "get": {
+                "description": "Responds with HTTP 404 and a message",
+                "tags": [
+                    "codes"
+                ],
+                "summary": "Returns Not Found status",
+                "responses": {
+                    "404": {
+                        "description": "Resource not found.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/okCode": {
+            "get": {
+                "description": "Responds with HTTP 200 and a message",
+                "tags": [
+                    "codes"
+                ],
+                "summary": "Returns OK status",
+                "responses": {
+                    "200": {
+                        "description": "Everything is awesome!",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/proxyRequired": {
+            "get": {
+                "description": "Responds with HTTP 407 and a message",
+                "tags": [
+                    "codes"
+                ],
+                "summary": "Returns Proxy Authentication Required status",
+                "responses": {
+                    "407": {
+                        "description": "Proxy authentication required.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

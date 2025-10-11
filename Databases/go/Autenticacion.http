@@ -1,0 +1,39 @@
+@goAPI = http://localhost:8080
+
+### Login to get JWT token
+GET {{goAPI}}/login?username=aminespinoza
+
+###
+GET {{goAPI}}/okCode
+Accept: application/json
+Authorization: Bearer <your_jwt_token>
+
+###
+GET {{goAPI}}/continueCode
+Accept: application/json
+Authorization: Bearer <your_jwt_token>
+
+###
+GET {{goAPI}}/movedPermanently
+Accept: application/json
+Authorization: Bearer <your_jwt_token>
+
+###
+GET {{goAPI}}/badRequest
+Accept: application/json
+Authorization: Bearer <your_jwt_token>
+
+###
+GET {{goAPI}}/forbidden
+Accept: application/json
+Authorization: Bearer <your_jwt_token>
+
+###
+GET {{goAPI}}/notFound
+Accept: application/json
+Authorization: Bearer <your_jwt_token>
+
+###
+GET {{goAPI}}/proxyRequired
+Accept: application/json
+Authorization: Bearer <your_jwt_token>
