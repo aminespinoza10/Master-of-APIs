@@ -38,13 +38,25 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Test PostgreSQL connection on startup (Npgsql required)
+var apiKey = builder.Configuration["ApiKey"];
+
+app.Use(async (context, next) =>
+{
+    if (!context.Request.Headers.TryGetValue("X-API-Key", out var extractedApiKey) ||
+        extractedApiKey != apiKey)
+    {
+        context.Response.StatusCode = 401;
+        await context.Response.WriteAsync("Unauthorized");
+        return;
+    }
+    await next();
+});
+
 try
 {
     var connString = builder.Configuration.GetConnectionString("DefaultConnection");
     if (!string.IsNullOrEmpty(connString))
     {
-        // Attempt to open a connection briefly to verify credentials
         using var conn = new Npgsql.NpgsqlConnection(connString);
         conn.Open();
         app.Logger.LogInformation("Successfully connected to PostgreSQL");
@@ -60,60 +72,99 @@ catch (Exception ex)
     app.Logger.LogError(ex, "Failed to connect to PostgreSQL on startup");
 }
 
-var apiKey = builder.Configuration["ApiKey"];
-
-app.Use(async (context, next) =>
-{
-    if (!context.Request.Headers.TryGetValue("X-API-Key", out var extractedApiKey) ||
-        extractedApiKey != apiKey)
-    {
-        context.Response.StatusCode = 401;
-        await context.Response.WriteAsync("Unauthorized");
-        return;
-    }
-    await next();
-});
-
 app.MapGet("/okCode", () =>
 {
     return Results.Ok("Everything is awesome!");
 }).WithName("getOkCode")
 .WithOpenApi();
 
-app.MapGet("/continueCode", () =>
+app.MapGet("/users", async (HttpContext context) =>
 {
-    return Results.StatusCode(100);
-}).WithName("getContinueCode")
-.WithOpenApi();
+    var connString = app.Configuration.GetConnectionString("DefaultConnection");
+    if (string.IsNullOrWhiteSpace(connString))
+    {
+        app.Logger.LogWarning("Attempt to call /users but DefaultConnection is not configured.");
+        return Results.Problem(detail: "Database connection is not configured.", statusCode: 500);
+    }
 
-app.MapGet("/movedPermanently", () =>
-{
-    return Results.StatusCode(301);
-}).WithName("getMovedPermanently")
-.WithOpenApi();
+    try
+    {
+        await using var conn = new Npgsql.NpgsqlConnection(connString);
+        await conn.OpenAsync();
+        await using var cmd = new Npgsql.NpgsqlCommand("SELECT * FROM users", conn);
+        await using var reader = await cmd.ExecuteReaderAsync();
 
-app.MapGet("/badRequest", () =>
-{
-    return Results.BadRequest("This was a bad request");
-}).WithName("getBadRequest")
-.WithOpenApi();
+        var results = new List<Dictionary<string, object?>>();
+        while (await reader.ReadAsync())
+        {
+            var row = new Dictionary<string, object?>();
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                var name = reader.GetName(i);
+                var value = await reader.IsDBNullAsync(i) ? null : reader.GetValue(i);
+                row[name] = value;
+            }
+            results.Add(row);
+        }
 
-app.MapGet("/forbidden", () =>
-{
-    return Results.StatusCode(403);
-}).WithName("getForbidden")
-.WithOpenApi();
+        return Results.Ok(results);
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "Error while fetching users from database");
+        return Results.Problem(detail: "An error occurred while fetching users.", statusCode: 500);
+    }
+}).WithName("getUsers").WithOpenApi();
 
-app.MapGet("/notFound", () =>
+app.MapPost("/users", async (UserCreateDto dto) =>
 {
-    return Results.NotFound("We couldn't find what you were looking for");
-}).WithName("getNotFound")
-.WithOpenApi();
+    if (dto == null)
+    {
+        return Results.BadRequest(new { error = "Request body is required." });
+    }
 
-app.MapGet("/proxyRequired", () =>
-{
-    return Results.StatusCode(407);
-}).WithName("getProxyRequired")
-.WithOpenApi();
+    if (string.IsNullOrWhiteSpace(dto.Name) || string.IsNullOrWhiteSpace(dto.Username) || string.IsNullOrWhiteSpace(dto.Password))
+    {
+        return Results.BadRequest(new { error = "Name, Username and Password are required to create a user." });
+    }
+
+    var connString = app.Configuration.GetConnectionString("DefaultConnection");
+    if (string.IsNullOrWhiteSpace(connString))
+    {
+        app.Logger.LogWarning("Attempt to call POST /users but DefaultConnection is not configured.");
+        return Results.Problem(detail: "Database connection is not configured.", statusCode: 500);
+    }
+
+    try
+    {
+        await using var conn = new Npgsql.NpgsqlConnection(connString);
+        await conn.OpenAsync();
+
+    const string sql = @"INSERT INTO users (name, username, password) VALUES (@name, @username, @password) RETURNING id";
+
+        await using var cmd = new Npgsql.NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("name", NpgsqlTypes.NpgsqlDbType.Text, dto.Name);
+        cmd.Parameters.AddWithValue("username", NpgsqlTypes.NpgsqlDbType.Text, dto.Username);
+        cmd.Parameters.AddWithValue("password", NpgsqlTypes.NpgsqlDbType.Text, dto.Password);
+
+        var insertedIdObj = await cmd.ExecuteScalarAsync();
+        if (insertedIdObj == null || insertedIdObj == DBNull.Value)
+        {
+            return Results.Problem(detail: "Failed to create user.", statusCode: 500);
+        }
+
+        var insertedId = Convert.ToInt64(insertedIdObj);
+
+        var result = new { id = insertedId, name = dto.Name, username = dto.Username };
+        return Results.Created($"/users/{insertedId}", result);
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "Error while creating user with username {Username}", dto?.Username);
+        return Results.Problem(detail: "An error occurred while creating the user.", statusCode: 500);
+    }
+}).WithName("createUser").WithOpenApi();
 
 app.Run();
+
+public record UserCreateDto(string Name, string Username, string Password);
