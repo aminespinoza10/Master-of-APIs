@@ -1,0 +1,21 @@
+@goAPI = http://localhost:8081
+
+### Login to get JWT token
+GET {{goAPI}}/login?username=aminespinoza
+
+### Get users with JWT token
+GET {{goAPI}}/getUsers
+Accept: application/json
+Authorization: Bearer <tu token JWT aqui>
+
+### Create user with JWT token
+POST {{goAPI}}/createUser
+Content-Type: application/json
+Authorization: Bearer <tu token JWT aqui>
+
+{
+    "name": "Marcela Martinez",
+    "username": "marcelaquiroga",
+    "password": "M3_s5p2r_p1ssw4rd"
+}
+

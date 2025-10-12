@@ -78,12 +78,12 @@ app.MapGet("/okCode", () =>
 }).WithName("getOkCode")
 .WithOpenApi();
 
-app.MapGet("/users", async (HttpContext context) =>
+app.MapGet("/getUsers", async (HttpContext context) =>
 {
     var connString = app.Configuration.GetConnectionString("DefaultConnection");
     if (string.IsNullOrWhiteSpace(connString))
     {
-        app.Logger.LogWarning("Attempt to call /users but DefaultConnection is not configured.");
+        app.Logger.LogWarning("Attempt to call /getUsers but DefaultConnection is not configured.");
         return Results.Problem(detail: "Database connection is not configured.", statusCode: 500);
     }
 
@@ -116,7 +116,7 @@ app.MapGet("/users", async (HttpContext context) =>
     }
 }).WithName("getUsers").WithOpenApi();
 
-app.MapPost("/users", async (UserCreateDto dto) =>
+app.MapPost("/createUsers", async (UserCreateDto dto) =>
 {
     if (dto == null)
     {

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -9,11 +11,24 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 var jwtSecret []byte
+
+type User struct {
+	ID       int    `json:"id"`
+	Name     string `json:"name"`
+	Username string `json:"username"`
+}
+
+type CreateUser struct {
+	Name     string `json:"name"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
 
 func jwtMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -76,70 +91,92 @@ func okCodeHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Everything is awesome!")
 }
 
-// continueCodeHandler godoc
-// @Summary Returns Continue status
-// @Description Responds with HTTP 100 and a message
-// @Tags codes
-// @Success 100 {string} string "Continue processing..."
-// @Router /continueCode [get]
-func continueCodeHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusContinue)
-	fmt.Fprintln(w, "Continue processing...")
+// usersHandler godoc
+// @Summary Get all users
+// @Description Returns a list of users from the database
+// @Tags users
+// @Success 200 {array} User
+// @Failure 500 {string} string "Failed to connect to database" or "Query failed" or "Row scan failed"
+// @Router /getUsers [get]
+func usersHandler(w http.ResponseWriter, r *http.Request) {
+	dbURL := os.Getenv("DATABASE_URL")
+	if dbURL == "" {
+		http.Error(w, "DATABASE_URL not set", http.StatusInternalServerError)
+		return
+	}
+
+	ctx := context.Background()
+	conn, err := pgx.Connect(ctx, dbURL)
+	if err != nil {
+		http.Error(w, "Failed to connect to database", http.StatusInternalServerError)
+		return
+	}
+	defer conn.Close(ctx)
+
+	rows, err := conn.Query(ctx, "SELECT id, name, username FROM users")
+	if err != nil {
+		http.Error(w, "Query failed", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	users := []User{}
+	for rows.Next() {
+		var u User
+		if err := rows.Scan(&u.ID, &u.Name, &u.Username); err != nil {
+			http.Error(w, "Row scan failed", http.StatusInternalServerError)
+			return
+		}
+		users = append(users, u)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(users)
 }
 
-// movedPemanentlyHandler godoc
-// @Summary Returns Moved Permanently status
-// @Description Responds with HTTP 301 and a message
-// @Tags codes
-// @Success 301 {string} string "This resource has been moved permanently."
-// @Router /movedPermanently [get]
-func movedPemanentlyHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusMovedPermanently)
-	fmt.Fprintln(w, "This resource has been moved permanently.")
-}
+// createUserHandler godoc
+// @Summary Create a new user
+// @Description Create a new user and return the created record
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param user body CreateUser true "New user"
+// @Success 201 {object} User
+// @Failure 400 {string} string "Invalid input"
+// @Failure 500 {string} string "DB error"
+// @Router /createUser [post]
+func createUserHandler(w http.ResponseWriter, r *http.Request) {
+	var cu CreateUser
+	if err := json.NewDecoder(r.Body).Decode(&cu); err != nil {
+		http.Error(w, "Invalid input", http.StatusBadRequest)
+		return
+	}
 
-// badRequestHandler godoc
-// @Summary Returns Bad Request status
-// @Description Responds with HTTP 400 and a message
-// @Tags codes
-// @Success 400 {string} string "Bad request. Please check your input."
-// @Router /badRequest [get]
-func badRequestHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusBadRequest)
-	fmt.Fprintln(w, "Bad request. Please check your input.")
-}
+	dbURL := os.Getenv("DATABASE_URL")
+	if dbURL == "" {
+		http.Error(w, "DATABASE_URL not set", http.StatusInternalServerError)
+		return
+	}
 
-// forbiddenHandler godoc
-// @Summary Returns Forbidden status
-// @Description Responds with HTTP 403 and a message
-// @Tags codes
-// @Success 403 {string} string "Access forbidden. You don't have permission to access this resource."
-// @Router /forbidden [get]
-func forbiddenHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusForbidden)
-	fmt.Fprintln(w, "Access forbidden. You don't have permission to access this resource.")
-}
+	ctx := context.Background()
+	conn, err := pgx.Connect(ctx, dbURL)
+	if err != nil {
+		http.Error(w, "Failed to connect to database", http.StatusInternalServerError)
+		return
+	}
+	defer conn.Close(ctx)
 
-// notFoundHandler godoc
-// @Summary Returns Not Found status
-// @Description Responds with HTTP 404 and a message
-// @Tags codes
-// @Success 404 {string} string "Resource not found."
-// @Router /notFound [get]
-func notFoundHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotFound)
-	fmt.Fprintln(w, "Resource not found.")
-}
+	var id int
+	err = conn.QueryRow(ctx, "INSERT INTO users (name, username, password) VALUES ($1, $2, $3) RETURNING id", cu.Name, cu.Username, cu.Password).Scan(&id)
+	if err != nil {
+		http.Error(w, "DB error", http.StatusInternalServerError)
+		return
+	}
 
-// proxyRequiredHandler godoc
-// @Summary Returns Proxy Authentication Required status
-// @Description Responds with HTTP 407 and a message
-// @Tags codes
-// @Success 407 {string} string "Proxy authentication required."
-// @Router /proxyRequired [get]
-func proxyRequiredHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusProxyAuthRequired)
-	fmt.Fprintln(w, "Proxy authentication required.")
+	user := User{ID: id, Name: cu.Name, Username: cu.Username}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(user)
 }
 
 func main() {
@@ -156,17 +193,13 @@ func main() {
 
 	http.Handle("/login", http.HandlerFunc(loginHandler))
 	http.Handle("/okCode", jwtMiddleware(http.HandlerFunc(okCodeHandler)))
-	http.Handle("/continueCode", jwtMiddleware(http.HandlerFunc(continueCodeHandler)))
-	http.Handle("/movedPermanently", jwtMiddleware(http.HandlerFunc(movedPemanentlyHandler)))
-	http.Handle("/badRequest", jwtMiddleware(http.HandlerFunc(badRequestHandler)))
-	http.Handle("/forbidden", jwtMiddleware(http.HandlerFunc(forbiddenHandler)))
-	http.Handle("/notFound", jwtMiddleware(http.HandlerFunc(notFoundHandler)))
-	http.Handle("/proxyRequired", jwtMiddleware(http.HandlerFunc(proxyRequiredHandler)))
+	http.Handle("/getUsers", jwtMiddleware(http.HandlerFunc(usersHandler)))
+	http.Handle("/createUser", jwtMiddleware(http.HandlerFunc(createUserHandler)))
 
 	http.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 
-	fmt.Println("Starting server at :8080...")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	fmt.Println("Starting server at :8081...")
+	if err := http.ListenAndServe(":8081", nil); err != nil {
 		fmt.Println("Server failed:", err)
 	}
 }

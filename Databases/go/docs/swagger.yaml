@@ -1,62 +1,98 @@
+definitions:
+  main.CreateUser:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  main.User:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      username:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
-  /badRequest:
-    get:
-      description: Responds with HTTP 400 and a message
+  /createUser:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user and return the created record
+      parameters:
+      - description: New user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/main.CreateUser'
+      produces:
+      - application/json
       responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.User'
         "400":
-          description: Bad request. Please check your input.
+          description: Invalid input
           schema:
             type: string
-      summary: Returns Bad Request status
+        "500":
+          description: DB error
+          schema:
+            type: string
+      summary: Create a new user
       tags:
-      - codes
-  /continueCode:
+      - users
+  /getUsers:
     get:
-      description: Responds with HTTP 100 and a message
+      description: Returns a list of users from the database
       responses:
-        "100":
-          description: Continue processing...
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.User'
+            type: array
+        "500":
+          description: Failed to connect to database" or "Query failed" or "Row scan
+            failed
           schema:
             type: string
-      summary: Returns Continue status
+      summary: Get all users
       tags:
-      - codes
-  /forbidden:
+      - users
+  /login:
     get:
-      description: Responds with HTTP 403 and a message
+      description: Returns a JWT token for a given username
+      parameters:
+      - description: Username
+        in: query
+        name: username
+        required: true
+        type: string
       responses:
-        "403":
-          description: Access forbidden. You don't have permission to access this
-            resource.
+        "200":
+          description: JWT token
           schema:
             type: string
-      summary: Returns Forbidden status
-      tags:
-      - codes
-  /movedPermanently:
-    get:
-      description: Responds with HTTP 301 and a message
-      responses:
-        "301":
-          description: This resource has been moved permanently.
+        "400":
+          description: Username required
           schema:
             type: string
-      summary: Returns Moved Permanently status
-      tags:
-      - codes
-  /notFound:
-    get:
-      description: Responds with HTTP 404 and a message
-      responses:
-        "404":
-          description: Resource not found.
+        "500":
+          description: Could not generate token
           schema:
             type: string
-      summary: Returns Not Found status
+      summary: Generate JWT token
       tags:
-      - codes
+      - auth
   /okCode:
     get:
       description: Responds with HTTP 200 and a message
@@ -66,17 +102,6 @@ paths:
           schema:
             type: string
       summary: Returns OK status
-      tags:
-      - codes
-  /proxyRequired:
-    get:
-      description: Responds with HTTP 407 and a message
-      responses:
-        "407":
-          description: Proxy authentication required.
-          schema:
-            type: string
-      summary: Returns Proxy Authentication Required status
       tags:
       - codes
 swagger: "2.0"

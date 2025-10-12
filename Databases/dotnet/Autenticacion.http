@@ -5,38 +5,20 @@ Headers:
 X-API-Key: "tu llave API aquí"
 Accept: application/json
 
-###
-GET {{dotnetAPI}}/continueCode/
+### Get Users
+GET {{dotnetAPI}}/getUsers/
 Headers:
 X-API-Key: "tu llave API aquí"
 Accept: application/json
 
-###
-GET {{dotnetAPI}}/movedPermanently/
+### Create User
+POST {{dotnetAPI}}/createUser/
 Headers:
 X-API-Key: "tu llave API aquí"
-Accept: application/json
+Content-Type: application/json
 
-###
-GET {{dotnetAPI}}/badRequest/
-Headers:
-X-API-Key: "tu llave API aquí"
-Accept: application/json
-
-###
-GET {{dotnetAPI}}/forbidden/
-Headers:
-X-API-Key: "tu llave API aquí"
-Accept: application/json
-
-###
-GET {{dotnetAPI}}/notFound/
-Headers:
-X-API-Key: "tu llave API aquí"
-Accept: application/json
-
-###
-GET {{dotnetAPI}}/proxyRequired/
-Headers:
-X-API-Key: "tu llave API aquí"
-Accept: application/json
+{
+    "name": "Amin Espinoza",
+    "username": "aminespinoza",
+    "password": "M3_s5p2r_p1ssw4rd"
+}

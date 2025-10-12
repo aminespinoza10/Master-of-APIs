@@ -1,0 +1,23 @@
+@pythonAPI = http://localhost:8000
+
+# Get token through OAuth2 (form-encoded)
+POST {{pythonAPI}}/token
+Content-Type: application/x-www-form-urlencoded
+
+username=aminespinoza@mail.com&password=polliTeAmo123
+
+# Get users 
+GET {{pythonAPI}}/getUsers
+Accept: application/json
+Authorization: Bearer <tu token JWT aqui>
+
+# Create user
+POST {{pythonAPI}}/createUser
+Content-Type: application/json
+Authorization: Bearer <tu token JWT aqui>
+
+{
+    "name": "Marcela Martinez",
+    "username": "marcelaquiroga",
+    "password": "M3_s5p2r_p1ssw4rd"
+}

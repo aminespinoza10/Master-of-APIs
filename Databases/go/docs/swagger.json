@@ -4,16 +4,45 @@
         "contact": {}
     },
     "paths": {
-        "/badRequest": {
-            "get": {
-                "description": "Responds with HTTP 400 and a message",
-                "tags": [
-                    "codes"
+        "/createUser": {
+            "post": {
+                "description": "Create a new user and return the created record",
+                "consumes": [
+                    "application/json"
                 ],
-                "summary": "Returns Bad Request status",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Create a new user",
+                "parameters": [
+                    {
+                        "description": "New user",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.CreateUser"
+                        }
+                    }
+                ],
                 "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/main.User"
+                        }
+                    },
                     "400": {
-                        "description": "Bad request. Please check your input.",
+                        "description": "Invalid input",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "DB error",
                         "schema": {
                             "type": "string"
                         }
@@ -21,16 +50,25 @@
                 }
             }
         },
-        "/continueCode": {
+        "/getUsers": {
             "get": {
-                "description": "Responds with HTTP 100 and a message",
+                "description": "Returns a list of users from the database",
                 "tags": [
-                    "codes"
+                    "users"
                 ],
-                "summary": "Returns Continue status",
+                "summary": "Get all users",
                 "responses": {
-                    "100": {
-                        "description": "Continue processing...",
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/main.User"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to connect to database\" or \"Query failed\" or \"Row scan failed",
                         "schema": {
                             "type": "string"
                         }
@@ -38,50 +76,37 @@
                 }
             }
         },
-        "/forbidden": {
+        "/login": {
             "get": {
-                "description": "Responds with HTTP 403 and a message",
+                "description": "Returns a JWT token for a given username",
                 "tags": [
-                    "codes"
+                    "auth"
                 ],
-                "summary": "Returns Forbidden status",
+                "summary": "Generate JWT token",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Username",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
-                    "403": {
-                        "description": "Access forbidden. You don't have permission to access this resource.",
+                    "200": {
+                        "description": "JWT token",
                         "schema": {
                             "type": "string"
                         }
-                    }
-                }
-            }
-        },
-        "/movedPermanently": {
-            "get": {
-                "description": "Responds with HTTP 301 and a message",
-                "tags": [
-                    "codes"
-                ],
-                "summary": "Returns Moved Permanently status",
-                "responses": {
-                    "301": {
-                        "description": "This resource has been moved permanently.",
+                    },
+                    "400": {
+                        "description": "Username required",
                         "schema": {
                             "type": "string"
                         }
-                    }
-                }
-            }
-        },
-        "/notFound": {
-            "get": {
-                "description": "Responds with HTTP 404 and a message",
-                "tags": [
-                    "codes"
-                ],
-                "summary": "Returns Not Found status",
-                "responses": {
-                    "404": {
-                        "description": "Resource not found.",
+                    },
+                    "500": {
+                        "description": "Could not generate token",
                         "schema": {
                             "type": "string"
                         }
@@ -105,21 +130,34 @@
                     }
                 }
             }
+        }
+    },
+    "definitions": {
+        "main.CreateUser": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
         },
-        "/proxyRequired": {
-            "get": {
-                "description": "Responds with HTTP 407 and a message",
-                "tags": [
-                    "codes"
-                ],
-                "summary": "Returns Proxy Authentication Required status",
-                "responses": {
-                    "407": {
-                        "description": "Proxy authentication required.",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
+        "main.User": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         }

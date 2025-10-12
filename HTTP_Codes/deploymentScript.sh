@@ -25,6 +25,8 @@ dotnet new webapi -o DotnetCodes
 # dotnet (in the NetCodes directory)
 # dotnet run
 
+# Update go documentation
+#~/go/bin/swag init -g main.go -o ./docs
 # Go (in the GoCodes directory)
 # go run main.go
 
