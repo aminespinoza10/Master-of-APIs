@@ -93,8 +93,6 @@ func main() {
 	http.HandleFunc("/forbidden", forbiddenHandler)
 	http.HandleFunc("/notFound", notFoundHandler)
 	http.HandleFunc("/proxyRequired", proxyRequiredHandler)
-
-	// Serve Swagger UI
 	http.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 
 	fmt.Println("Starting server at :8080...")
