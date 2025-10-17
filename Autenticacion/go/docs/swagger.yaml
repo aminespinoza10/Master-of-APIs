@@ -35,6 +35,31 @@ paths:
       summary: Returns Forbidden status
       tags:
       - codes
+  /login:
+    get:
+      description: Returns a JWT token for a given username
+      parameters:
+      - description: Username
+        in: query
+        name: username
+        required: true
+        type: string
+      responses:
+        "200":
+          description: JWT token
+          schema:
+            type: string
+        "400":
+          description: Username required
+          schema:
+            type: string
+        "500":
+          description: Could not generate token
+          schema:
+            type: string
+      summary: Generate JWT token
+      tags:
+      - auth
   /movedPermanently:
     get:
       description: Responds with HTTP 301 and a message

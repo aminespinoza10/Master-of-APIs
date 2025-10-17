@@ -1,0 +1,42 @@
+@pythonAPI = http://localhost:8000
+
+## Get token for authentication
+POST {{pythonAPI}}/token/
+Content-Type: application/x-www-form-urlencoded
+ 
+grant_type=password&username=aminespinoza@mail.com&password=polliTeAmo123
+
+### Get ok code 200
+GET {{pythonAPI}}/okCode
+Content-Type: application/json
+Authorization: Bearer <your_jwt_token>
+
+###
+GET {{pythonAPI}}/continueCode
+Accept: application/json
+Authorization: Bearer <your_jwt_token>
+
+###
+GET {{pythonAPI}}/movedPermanently
+Accept: application/json
+Authorization: Bearer <your_jwt_token>
+
+###
+GET {{pythonAPI}}/badRequest
+Accept: application/json
+Authorization: Bearer <your_jwt_token>
+
+###
+GET {{pythonAPI}}/forbidden
+Accept: application/json
+Authorization: Bearer <your_jwt_token>
+
+###
+GET {{pythonAPI}}/notFound
+Accept: application/json
+Authorization: Bearer <your_jwt_token>
+
+###
+GET {{pythonAPI}}/proxyRequired
+Accept: application/json
+Authorization: Bearer <your_jwt_token>

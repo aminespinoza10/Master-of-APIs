@@ -66,6 +66,44 @@ const docTemplate = `{
                 }
             }
         },
+        "/login": {
+            "get": {
+                "description": "Returns a JWT token for a given username",
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Generate JWT token",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Username",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "JWT token",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Username required",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Could not generate token",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/movedPermanently": {
             "get": {
                 "description": "Responds with HTTP 301 and a message",
