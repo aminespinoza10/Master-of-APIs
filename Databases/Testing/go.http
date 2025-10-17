@@ -1,4 +1,4 @@
-@goAPI = http://localhost:8081
+@goAPI = http://localhost:8080
 
 ### Login to get JWT token
 GET {{goAPI}}/login?username=aminespinoza

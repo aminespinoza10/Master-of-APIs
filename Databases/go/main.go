@@ -198,8 +198,8 @@ func main() {
 
 	http.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 
-	fmt.Println("Starting server at :8081...")
-	if err := http.ListenAndServe(":8081", nil); err != nil {
+	fmt.Println("Starting server at :8080...")
+	if err := http.ListenAndServe(":8080", nil); err != nil {
 		fmt.Println("Server failed:", err)
 	}
 }
