@@ -1,0 +1,145 @@
+definitions:
+  main.CreateUser:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  main.EmailResponse:
+    properties:
+      email:
+        type: string
+      username:
+        type: string
+    type: object
+  main.User:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /createUser:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user and return the created record
+      parameters:
+      - description: New user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/main.CreateUser'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.User'
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "500":
+          description: DB error
+          schema:
+            type: string
+      summary: Create a new user
+      tags:
+      - users
+  /getEmail:
+    get:
+      description: Returns the decrypted email for the given username
+      parameters:
+      - description: Username
+        in: query
+        name: username
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.EmailResponse'
+        "400":
+          description: Username required
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+        "500":
+          description: DB error" or "Decryption failed
+          schema:
+            type: string
+      summary: Get decrypted email by username
+      tags:
+      - users
+  /getUsers:
+    get:
+      description: Returns a list of users from the database
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.User'
+            type: array
+        "500":
+          description: Failed to connect to database" or "Query failed" or "Row scan
+            failed
+          schema:
+            type: string
+      summary: Get all users
+      tags:
+      - users
+  /login:
+    get:
+      description: Returns a JWT token for a given username
+      parameters:
+      - description: Username
+        in: query
+        name: username
+        required: true
+        type: string
+      responses:
+        "200":
+          description: JWT token
+          schema:
+            type: string
+        "400":
+          description: Username required
+          schema:
+            type: string
+        "500":
+          description: Could not generate token
+          schema:
+            type: string
+      summary: Generate JWT token
+      tags:
+      - auth
+  /okCode:
+    get:
+      description: Responds with HTTP 200 and a message
+      responses:
+        "200":
+          description: Everything is awesome!
+          schema:
+            type: string
+      summary: Returns OK status
+      tags:
+      - codes
+swagger: "2.0"

@@ -4,12 +4,12 @@
 POST {{pythonAPI}}/token
 Content-Type: application/x-www-form-urlencoded
 
-grant_type=password&username=aminespinoza@mail.com&password=polliTeAmo123
+grant_type=password&username=aminespinoza%40mail.com&password=polliTeAmo123
 
 ### Get users 
 GET {{pythonAPI}}/getUsers
 Accept: application/json
-Authorization: Bearer <tu token JWT aqui>
+Authorization: Bearer yourtoken
 
 ### Create user
 POST {{pythonAPI}}/createUser

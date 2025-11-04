@@ -1,0 +1,7 @@
+uvicorn
+fastapi
+python-multipart
+pydantic
+asyncpg
+python-dotenv
+bcrypt

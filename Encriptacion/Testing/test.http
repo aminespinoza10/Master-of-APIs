@@ -1,0 +1,10 @@
+@virtualQueueEndpoint = https://soyleon-api-virtual-queue-esduh8eyg7def4ak.mexicocentral-01.azurewebsites.net
+
+### Login user
+POST {{virtualQueueEndpoint}}/api/Users/login
+Content-Type: application/json
+
+{
+  "name": "Test",
+  "password": "s5p2rm1n"
+}
